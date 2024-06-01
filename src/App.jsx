@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
+import './App.css'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import Notification from './components/Notification'
 
 
 const App = () => {
@@ -9,7 +11,7 @@ const App = () => {
   const [newBlog, setNewBlog] = useState({title:'', author:'', url:''})
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('') 
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [notifMessage, setNotifMessage] = useState(null)
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('loggedBloglistUser')) || null)
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -29,9 +31,9 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setErrorMessage('Wrong credentials')
+      setNotifMessage({type: 'error', message:'Wrong username or passowrd'})
       setTimeout(() => {
-        setErrorMessage(null)
+        setNotifMessage(null)
       }, 5000)
     }
   }
@@ -43,14 +45,18 @@ const App = () => {
     event.preventDefault()
     try{
       const response = await blogService.create(newBlog)
+      setNotifMessage({type:'success', message: `a new blog ${response.title} by ${response.author} added`})
+      setTimeout(() => {
+        setNotifMessage(null)
+      }, 5000)
       setNewBlog({title:'', author:'', url:''})
       setBlogs([...blogs, response])
     }
     catch(error){
       console.log(error.message)
-      setErrorMessage(error.message)
+      setNotifMessage({type:'error', message: error.message})
       setTimeout(() => {
-        setErrorMessage(null)
+        setNotifMessage(null)
       }, 5000)
     }
   }
@@ -134,6 +140,7 @@ const App = () => {
   )
   return (
     <div>
+      <Notification notifMessage={notifMessage} />
       {!user && loginForm()}
       {user && loggedUserElements()}
     </div>
