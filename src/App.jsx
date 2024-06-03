@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef} from 'react'
+import { nanoid } from 'nanoid'
 import './App.css'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
@@ -57,7 +58,21 @@ const App = () => {
       setBlogs([...blogs, response])
     }
     catch(error){
-      console.log(error.message)
+      setNotifMessage({type:'error', message: error.message})
+      setTimeout(() => {
+        setNotifMessage(null)
+      }, 5000)
+    }
+  }
+  const updateBlog = async (updatedBlog) =>{
+    try{
+      const response = await blogService.update(updatedBlog)
+      const newBlogs = [...blogs]
+      const blogIndex = newBlogs.findIndex((blog)=> blog.id === updatedBlog.id)
+      newBlogs[blogIndex] = response
+      setBlogs(newBlogs)
+    }
+    catch(error){
       setNotifMessage({type:'error', message: error.message})
       setTimeout(() => {
         setNotifMessage(null)
@@ -87,7 +102,7 @@ const App = () => {
       <p>{user.name} {user.username} is logged in <button onClick={handleLogout}>logout</button></p>
       {blogForm()}
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} update={updateBlog}/>
       )}
     </div>
   )
