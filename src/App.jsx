@@ -17,6 +17,7 @@ const App = () => {
   const [notifMessage, setNotifMessage] = useState(null)
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('loggedBloglistUser')) || null)
   const blogFormRef = useRef()
+  
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
@@ -48,6 +49,7 @@ const App = () => {
   const createBlog = async (newBlog, setNewBlog)=>{
 
     try{
+      blogService.setToken(user.token)
       blogFormRef.current.toggleVisibility()
       const response = await blogService.create(newBlog)
       setNotifMessage({type:'success', message: `a new blog ${response.title} by ${response.author} added`})
@@ -70,6 +72,20 @@ const App = () => {
       const newBlogs = [...blogs]
       const blogIndex = newBlogs.findIndex((blog)=> blog.id === updatedBlog.id)
       newBlogs[blogIndex].likes = response.likes
+      setBlogs(newBlogs)
+    }
+    catch(error){
+      setNotifMessage({type:'error', message: error.message})
+      setTimeout(() => {
+        setNotifMessage(null)
+      }, 5000)
+    }
+  }
+  const removeBlog = async (blogId)=>{
+    try{
+      blogService.setToken(user.token)
+      await blogService.remove(blogId)
+      const newBlogs = blogs.filter((blog)=> blog.id !== blogId)
       setBlogs(newBlogs)
     }
     catch(error){
@@ -102,7 +118,7 @@ const App = () => {
       <p>{user.name} {user.username} is logged in <button onClick={handleLogout}>logout</button></p>
       {blogForm()}
       {blogs.toSorted((a,b)=> b.likes-a.likes).map(blog =>
-        <Blog key={blog.id} blog={blog} update={updateBlogLikes}/>
+        <Blog key={blog.id} blog={blog} update={updateBlogLikes} remove={removeBlog} username={user.username}/>
       )}
     </div>
   )
