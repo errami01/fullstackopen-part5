@@ -64,12 +64,12 @@ const App = () => {
       }, 5000)
     }
   }
-  const updateBlog = async (updatedBlog) =>{
+  const updateBlogLikes = async (updatedBlog) =>{
     try{
       const response = await blogService.update(updatedBlog)
       const newBlogs = [...blogs]
       const blogIndex = newBlogs.findIndex((blog)=> blog.id === updatedBlog.id)
-      newBlogs[blogIndex] = response
+      newBlogs[blogIndex].likes = response.likes
       setBlogs(newBlogs)
     }
     catch(error){
@@ -102,7 +102,7 @@ const App = () => {
       <p>{user.name} {user.username} is logged in <button onClick={handleLogout}>logout</button></p>
       {blogForm()}
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} update={updateBlog}/>
+        <Blog key={blog.id} blog={blog} update={updateBlogLikes}/>
       )}
     </div>
   )
