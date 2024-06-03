@@ -101,7 +101,7 @@ const App = () => {
       <h1>Blogs</h1>
       <p>{user.name} {user.username} is logged in <button onClick={handleLogout}>logout</button></p>
       {blogForm()}
-      {blogs.map(blog =>
+      {blogs.toSorted((a,b)=> b.likes-a.likes).map(blog =>
         <Blog key={blog.id} blog={blog} update={updateBlogLikes}/>
       )}
     </div>
