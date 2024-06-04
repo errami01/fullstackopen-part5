@@ -1,8 +1,8 @@
-import { useState } from "react"
+import { useState } from 'react'
 
 const Blog = ({ blog, update, username, remove }) => {
   const [isHidden, setIsHidden] = useState(true)
-  const toggleVisibility = ()=> setIsHidden(!isHidden)
+  const toggleVisibility = () => setIsHidden(!isHidden)
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -10,34 +10,34 @@ const Blog = ({ blog, update, username, remove }) => {
     borderWidth: 1,
     marginBottom: 5
   }
-  const handleLikeClick =async ()=>{
+  const handleLikeClick =async () => {
     await update({
       ...blog,
       user: blog.user.id,
       likes: blog.likes+1
     })
   }
-  const handleRemoveClick = async () =>{
+  const handleRemoveClick = async () => {
     if(confirm(`Remove blog ${blog.title} by ${blog.author}`)){
       await remove(blog.id)
     }
   }
-  const displayRemoveButton = ()=>{
+  const displayRemoveButton = () => {
     return(
       blog.user?.username === username && <button onClick={handleRemoveClick}>remove</button>
     )
   }
   return(
-  <div style={blogStyle}>
-    {blog.title} {blog.author} 
-    <button onClick={toggleVisibility}>{isHidden ? 'view':'hide'}</button>
-    {!isHidden && <div>
-      <p>{blog.url}</p>
-      <p>likes {blog.likes} <button onClick={handleLikeClick}>like</button></p>
-      <p>{blog.user?.name} {blog.user?.username}</p>
-      {displayRemoveButton()}
-    </div>}
-  </div>  
-)}
+    <div style={blogStyle}>
+      {blog.title} {blog.author}
+      <button onClick={toggleVisibility}>{isHidden ? 'view':'hide'}</button>
+      {!isHidden && <div>
+        <p>{blog.url}</p>
+        <p>likes {blog.likes} <button onClick={handleLikeClick}>like</button></p>
+        <p>{blog.user?.name} {blog.user?.username}</p>
+        {displayRemoveButton()}
+      </div>}
+    </div>
+  ) }
 
 export default Blog
