@@ -8,7 +8,7 @@ const LoginForm = ({
   password
 }) => {
   return(
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} data-testid='login-form'>
       <h2>Log in to application</h2>
       <div>
                 username
@@ -17,6 +17,7 @@ const LoginForm = ({
           value={username}
           name="Username"
           onChange={handleUsernameChange}
+          data-testid='username'
         />
       </div>
       <div>
@@ -26,6 +27,7 @@ const LoginForm = ({
           value={password}
           name="Password"
           onChange={handlePasswordChange}
+          data-testid='password'
         />
       </div>
       <button type="submit">login</button>
