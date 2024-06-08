@@ -18,7 +18,7 @@ const BlogForm = ({
   return(
     <div>
       <h1>create new</h1>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} data-testid='blog-form'>
         <div>
           title
           <input

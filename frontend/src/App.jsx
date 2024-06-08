@@ -108,7 +108,7 @@ const App = () => {
     </Togglable>
   )
   const loggedUserElements = () => (
-    <div>
+    <div data-testid='blogs-list'>
       <h1>Blogs</h1>
       <p>{user.name} {user.username} is logged in <button onClick={handleLogout}>logout</button></p>
       {blogForm()}
