@@ -9,7 +9,7 @@ describe('Blog app', () => {
                 username: 'abdo',
                 password: 'salainen'
             }
-    })
+        })
         await page.goto('http://localhost:5173')
     })
   
@@ -58,12 +58,32 @@ describe('Blog app', () => {
                 await page.getByRole('button', {name: 'view'}).click()
                 await expect(page.getByRole('button', {name: 'like'})).toBeVisible()
             })
-            test.only('a blog can be deleted by the creator user', async ({page}) =>{
+            test('a blog can be deleted by the creator user', async ({page}) =>{
                 await page.getByText('Tirge ahmed').getByRole('button', {name: 'view'}).click()
                 page.on('dialog', dialog => dialog.accept())
                 await page.getByText('Tirge ahmed').getByRole('button', {name: 'remove'}).click()
                 await expect(page.getByText('Tirge ahmed')).toHaveCount(0)
                 
+            })
+            test('only the user who added the blog sees the blog\'s delete button', async ({page, request}) => {
+                await request.post('http://localhost:3003/api/users', {
+                    data: {
+                        name: 'qwe',
+                        username: 'asd',
+                        password: 'zxc'
+                    }
+                })
+                await page.getByText('Tirge ahmed').getByRole('button', {name: 'view'}).click()
+                await expect(page.getByText('Tirge ahmed').getByRole('button', {name: 'remove'}))
+                        .toHaveCount(1)
+                await page.getByRole('button', {name: 'logout'}).click()
+                await page.getByTestId('username').fill('asd')
+                await page.getByTestId('password').fill('zxc') 
+                await page.getByRole('button', { name: 'login' }).click()
+                await page.getByText('Tirge ahmed').getByRole('button', {name: 'view'}).click()
+                await expect(page.getByText('Tirge ahmed').getByRole('button', {name: 'remove'}))
+                        .toHaveCount(0)
+
             })
         })
       })
