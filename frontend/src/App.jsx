@@ -54,6 +54,7 @@ const App = () => {
         setNotifMessage(null)
       }, 5000)
       setNewBlog({ title:'', author:'', url:'' })
+      console.log(response)
       setBlogs([...blogs, response])
     }
     catch(error){
