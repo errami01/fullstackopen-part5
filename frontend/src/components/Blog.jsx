@@ -28,12 +28,12 @@ const Blog = ({ blog, update, username, remove }) => {
     )
   }
   return(
-    <div style={blogStyle} >
+    <div style={blogStyle} className='blog-container'>
       {blog.title} {blog.author}
       <button onClick={toggleVisibility}>{isHidden ? 'view':'hide'}</button>
       {!isHidden && <div className='hiddenInfo'>
         <p>{blog.url}</p>
-        <p>likes {blog.likes} <button onClick={handleLikeClick}>like</button></p>
+        <p>likes <span data-testid= 'likes-count'>{blog.likes}</span> <button onClick={handleLikeClick}>like</button></p>
         <p>{blog.user?.name} {blog.user?.username}</p>
         {displayRemoveButton()}
       </div>}

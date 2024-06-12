@@ -1,3 +1,4 @@
+import helper from './helper'
 const { test, expect, beforeEach, describe } = require('@playwright/test')
 
 describe('Blog app', () => {
@@ -18,41 +19,41 @@ describe('Blog app', () => {
     })
     describe('Login', () => {
         test('succeeds with correct credentials', async ({ page }) => {
-            await page.getByTestId('username').fill('abdo')
-            await page.getByTestId('password').fill('salainen') 
-            await page.getByRole('button', { name: 'login' }).click() 
+            await helper.logIn(page, 'abdo', 'salainen')
             await expect(page.getByText('nki abdo is logged in')).toBeVisible()
         })
     
         test('fails with wrong credentials', async ({ page }) => {
-            await page.getByTestId('username').fill('abdo')
-            await page.getByTestId('password').fill('salain') 
-            await page.getByRole('button', { name: 'login' }).click() 
+            await helper.logIn(page, 'abdo', 'salain')
             await expect(page.getByText('Wrong username or passowrd')).toBeVisible()
         })
       })
       describe('When logged in', () => {
         beforeEach(async ({ page }) => {
-            await page.getByTestId('username').fill('abdo')
-            await page.getByTestId('password').fill('salainen') 
-            await page.getByRole('button', { name: 'login' }).click() 
+            helper.logIn(page, 'abdo', 'salainen')
         })
       
         test('a new blog can be created', async ({ page }) => {
-          await page.getByRole('button', {name: 'new blog'}).click()
-          await page.getByTestId('title').fill('Tirge')
-          await page.getByTestId('author').fill('ahmed')
-          await page.getByTestId('url').fill('cocot.com')
-          await page.getByRole('button', { name: 'create' }).click()
-          await expect(page.getByTestId('blogs-list').getByText('Tirge ahmed')).toBeVisible()
+            await helper.createBlog(page, 'Tirge', 'ahmed', 'cocot.com')
+            await expect(page.getByTestId('blogs-list').getByText('Tirge ahmed')).toBeVisible()
+        })
+        test('blogs are arranged in the order with the most likes first', async ({ page }) => {
+            await helper.createBlog(page, 'title1', 'author1', 'url1')
+            await expect(page.locator('.blog-container')).toHaveCount(1)
+            await helper.createBlog(page, 'title2', 'author2', 'url2')
+            await expect(page.locator('.blog-container')).toHaveCount(2)
+            await helper.createBlog(page, 'title3', 'author3', 'url3')
+            await expect(page.locator('.blog-container')).toHaveCount(3)
+            await helper.addLikes(page, expect, 'title1 author1', 0)
+            await helper.addLikes(page, expect, 'title2 author2', 3)
+            await helper.addLikes(page, expect, 'title3 author3', 1)
+            await expect(page.locator('.blog-container').nth(0)).toHaveText(/title2/)
+            await expect(page.locator('.blog-container').nth(1)).toHaveText(/title3/)
+            await expect(page.locator('.blog-container').nth(2)).toHaveText(/title1/)
         })
         describe('when blog created', () => {
             beforeEach( async ({ page }) => {
-                await page.getByRole('button', {name: 'new blog'}).click()
-                await page.getByTestId('title').fill('Tirge')
-                await page.getByTestId('author').fill('ahmed')
-                await page.getByTestId('url').fill('cocot.com')
-                await page.getByRole('button', { name: 'create' }).click()        
+                await helper.createBlog(page, 'Tirge', 'ahmed', 'cocot.com')
             })
             test('a blog can be liked', async ({page}) => {
                 await page.getByRole('button', {name: 'view'}).click()
@@ -77,13 +78,10 @@ describe('Blog app', () => {
                 await expect(page.getByText('Tirge ahmed').getByRole('button', {name: 'remove'}))
                         .toHaveCount(1)
                 await page.getByRole('button', {name: 'logout'}).click()
-                await page.getByTestId('username').fill('asd')
-                await page.getByTestId('password').fill('zxc') 
-                await page.getByRole('button', { name: 'login' }).click()
+                await helper.logIn(page, 'asd', 'zxc')
                 await page.getByText('Tirge ahmed').getByRole('button', {name: 'view'}).click()
                 await expect(page.getByText('Tirge ahmed').getByRole('button', {name: 'remove'}))
                         .toHaveCount(0)
-
             })
         })
       })
